@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> 폼시스 | POMSYS</title>
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    {% block css %}
+    {% block extra_css %}
+    {% endblock %}
+    <!--Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+    {% include 'partials/css.html' %}
+    {% endblock css %}
+</head>
+
+
+<body data-sidebar="dark">
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        {% block header %}
+        {% include 'partials/header.html' %}
+        {% endblock %}
+        {% block sidebar %}
+        {% include 'partials/sidebar.html' %}
+        {% endblock %}
+        {% comment %} {% block header %}
+        {% include 'partials/hori-header.html' %}
+        {% endblock %}
+        {% block sidebar %}
+        {% include 'partials/hori-sidebar.html' %}
+        {% endblock %} {% endcomment %}
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message.message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0 font-size-18">{{heading}}</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">{{pageview}}</a></li>
+                                        <li class="breadcrumb-item active">{{heading}}</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+                    {% block contents %}
+
+                    {% endblock %}
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            {% block footer %}
+            {% include 'partials/footer.html' %}
+            {% endblock %}
+        </div>
+        <!-- end main content-->
+    </div>
+    <!-- END layout-wrapper -->
+    {% block Subscribe %}
+    {% endblock %}
+
+    <div id="preloader"></div>
+            {% block javascript %}
+            <!-- JAVASCRIPT -->
+            <script src="{% static 'libs/jquery/dist/jquery.min.js' %}"></script>
+            <script src="{% static 'libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+            <script src="{% static 'libs/metismenu/dist/metisMenu.min.js' %}"></script>
+            <script src="{% static 'libs/simplebar/dist/simplebar.min.js' %}"></script>
+            <script src="{% static 'libs/node-waves/dist/waves.min.js' %}"></script>
+            <script src="{% static 'js/pages/alerts.init.js' %}"></script>
+
+            {% block extra_javascript %}
+            {% endblock %}
+
+            <script src="{% static 'js/app.js' %}"></script>
+            {% endblock javascript %}
+        </body>
+
+    </html>

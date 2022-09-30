@@ -1,0 +1,37 @@
+<div id="delete_courseregistration" class="modal fade" tabindex="-1" aria-labelledby="DeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ApplyLabel">수강정보 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if courseregistration %}
+            <form action="{% url 'lectureapp:courseregistration_list' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+                <h5>'{{ courseregistration.student }}'학생의 수강정보를 삭제 하시겠습니까?</h5>
+                <ul>
+                    <li>
+                        <h5>학생</h5>
+                        <p>{{ courseregistration.student }}</p>
+                    </li>
+                    <li>
+                        <h5>강의</h5>
+                        <p>{{ courseregistration.lecture }}</p>
+                    </li>
+                    <li>
+                        <h5>수강 시작일</h5>
+                        <p>{{ courseregistration.joined_at }}</p>
+                    </li>
+                <input type="hidden" name="courseregistration_delete" value="{{ courseregistration.pk }}">
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-danger waves-effect waves-light">수강정보 삭제</button>
+            </div>
+            </form>
+            {% endif %}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

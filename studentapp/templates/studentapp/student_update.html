@@ -1,0 +1,40 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block contents %}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title mb-4">학생 정보 수정</h4>
+
+                                        <form action="{% url 'studentapp:update' pk=target_student.pk %}" enctype="multipart/form-data" method="post">
+                                            {% csrf_token %}
+                                            {% for field in form %}
+                                            <div class="row mb-4">
+                                                <label class="col-form-label col-lg-2">{{ field.label }}</label>
+                                                <div class="col-lg-10">
+                                                    {{ field }}
+                                                </div>
+                                            </div>
+                                                {% if field.errors %}
+                                                    {% for e in field.errors %}
+                                                        <p style="color:palevioletred;">{{ e | escape }}</p>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+
+
+                                        <div class="row justify-content-end">
+                                            <div class="col-lg-10">
+                                                <button type="submit" class="btn btn-primary">학생 정보 수정</button>
+                                            </div>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end row -->
+{% endblock %}

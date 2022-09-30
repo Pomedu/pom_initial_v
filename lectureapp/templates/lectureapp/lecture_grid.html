@@ -1,0 +1,76 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block contents %}
+                        <div class="row">
+                            {% if lecture_list %}
+                                {% for lecture in lecture_list %}
+                            <div class="col-xl-4 col-sm-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex">
+                                            <div class="flex-shrink-0 me-4">
+                                                <div class="avatar-md">
+                                                    <a href="{% url 'lectureapp:lecture_detail' pk=lecture.pk %}" >
+                                                    <span class="avatar-title rounded-circle text-white font-size-16" style="background-color:{{ lecture.teacher.subject.color }}">
+                                                        {{ lecture.teacher.subject.get_name_display }}
+                                                    </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            
+
+                                            <div class="flex-grow-1 overflow-hidden">
+                                                <h5 class="text-truncate font-size-15"><a href="{% url 'lectureapp:lecture_detail' pk=lecture.pk %}" class="text-dark">{{ lecture.name }}</a></h5>
+                                                <p class="text-muted mb-4"><strong>{{ lecture.teacher }}</strong> 강사</p>
+                                                <div class="avatar-group">
+                                                {% for student in lecture.students.all %}
+                                                    {% if student.profile_photo %}
+                                                    <div class="avatar-group-item">
+                                                        <a href="javascript: void(0);" class="d-inline-block">
+                                                            <img src="{{ student.profile_photo.url }}" alt="" class="rounded-circle avatar-xs">
+                                                        </a>
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="avatar-group-item">
+                                                        <a href="javascript: void(0);" class="d-inline-block">
+                                                            <div class="avatar-xs">
+                                                                <span class="avatar-title rounded-circle bg-info text-white font-size-16">
+                                                                    {{ student.name|slice:1 }}
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="px-4 py-3 border-top">
+                                        <ul class="list-inline mb-0">
+                                            <li class="list-inline-item me-3">
+                                                <span class="badge bg-secondary">{{ lecture.get_status_display }}</span>
+                                            </li>
+                                            <li class="list-inline-item me-3">
+                                                <i class= "bx bx-calendar me-1"></i> {{ lecture.start_date }} 개강
+                                            </li>
+                                            <li class="list-inline-item me-3">
+                                                <i class= "bx bx-user me-1"></i> {{ lecture.students.all|length }}명 수강
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% endfor %}
+
+                            {% endif %}
+                        </div>
+                        <!-- end row -->
+                        {% include 'snippets/pagination.html' with page_obj=page_obj %}
+
+{% endblock %}
+
+{% block extra_javascript %}
+    <script src="{% static 'js/pages/modal.init.js' %}"></script>
+{% endblock %}

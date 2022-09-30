@@ -1,0 +1,188 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block contents %}
+<div class="d-xl-flex">
+    <div class="w-100">
+        <div class="d-md-flex">
+            <div class="card filemanager-sidebar me-md-2">
+                <div class="card-body">
+
+                    <div class="d-flex flex-column h-100">
+                        <div class="mb-4">
+                            <div class="mb-3">
+                                <div class="dropdown">
+                                    <a class="btn btn-light w-100" href="{% url 'lectureapp:courseregistration_create' %}">
+                                        <i class="mdi mdi-plus me-1"></i> 신규 수강 등록
+                                    </a>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled categories-list">
+                                {% if user.role == "A" %}
+                                    {% for teacher in teacher_list %}
+                                        <li>
+                                            <div class="custom-accordion">
+                                                <a class="text-body fw-medium py-1 d-flex align-items-center" data-bs-toggle="collapse" href="#lecture-collapse_{{teacher.id}}" role="button" aria-expanded="false" aria-controls="lecture-collapse_{{lecture.id}}">
+                                                    <i class="mdi mdi-folder font-size-16 text-warning me-2"></i> {{ teacher.name }} <i class="mdi mdi-chevron-up accor-down-icon ms-auto"></i>
+                                                </a>
+                                                <div class="collapse" id="lecture-collapse_{{teacher.id}}">
+                                                    <div class="card border-0 shadow-none ps-2 mb-0">
+                                                        <ul class="list-unstyled mb-0">
+                                                            {% for lecture in teacher.lectures.all %}
+                                                            <li><a href="javascript: void(0);" onclick="callcourseregistration('{{ lecture.id }}') " class="d-flex align-items-center"><span class="me-auto">{{ lecture.name }}</span></a></li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                    {% csrf_token %}
+                                {% elif user.role == "T" %}
+                                    <li>
+                                        <div class="custom-accordion">
+                                            <a class="text-body fw-medium py-1 d-flex align-items-center" data-bs-toggle="collapse" href="#lecture({{teacher.pk}})" role="button" aria-expanded="false" aria-controls="lecture({{teacher.pk}})">
+                                                <i class="mdi mdi-folder font-size-16 text-warning me-2"></i> {{ teacher.name }} <i class="mdi mdi-chevron-up accor-down-icon ms-auto"></i>
+                                            </a>
+                                            <div class="collapse show" id="lecture({{teacher.pk}})">
+                                                <div class="card border-0 shadow-none ps-2 mb-0">
+                                                    <ul class="list-unstyled mb-0">
+                                                        {% for lecture in teacher.lectures.all %}
+                                                        <li><a href="javascript: void(0);" class="d-flex align-items-center"><span class="me-auto">{{ lecture.name }}</span></a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="w-100">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">수강 목록</h4>
+                        <p class="card-title-desc">강의별 수강목록입니다</p>
+                        <table id="courseregistration_list_table" class="table responsive table-bordered dt-responsive table-hover nowrap w-100">
+                            <thead>
+                            <tr>
+                                <th>강의</th>
+                                <th>개강일</th>
+                                <th>학생</th>
+                                <th>등록일</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {% if courseregistration_list %}
+                            {% for courseregistration in courseregistration_list %}
+
+                            <tr>
+                                <td>{{ courseregistration.lecture.name }}</td>
+                                <td>{{ courseregistration.lecture.start_date }}</td>
+                                <td>{{ courseregistration.student.name }}</td>
+                                <td>{{ courseregistration.joined_at }}</td>
+                                <td>
+                                    <a class="badge badge-soft-danger font-size-11 delete_courseregistration" data-bs-toggle="modal" data-bs-target="#delete_courseregistration" data-id="{{ courseregistration.id }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            </tbody>
+                            {% csrf_token %}
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- end col -->
+        </div> <!-- end row -->
+    </div>
+</div>
+
+{% include 'snippets/courseregistration_delete_modal.html' with courseregistration=courseregistration %}
+
+{% endblock %}
+
+
+{% block extra_javascript %}
+      <!-- Required datatable js -->
+        <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+        <!-- Buttons examples -->
+        <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+        <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+        <!-- Responsive examples -->
+        <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{% static 'js/pages/datatables.init.js' %}"></script>
+        <script>
+            var table = $("#courseregistration_list_table").DataTable({
+                order: [[0, 'asc']],
+            });
+
+            $(document).on('click','.delete_courseregistration',function(){
+                var id = $(this).data('id');
+                $.ajax({
+                    url:'',
+                    type:'POST',
+                    data:{
+                        'delete_id':id,
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success:function(data){
+                        $('#delete_courseregistration .modal-dialog').html($('#delete_courseregistration .modal-dialog',data));
+                        $('#delete_courseregistration').modal('show');
+                    },
+                    error:function(){
+                        console.log('error')
+                    },
+                });
+            });
+
+            function callcourseregistration(lecture_id){
+                $.ajax({
+                    url:'',
+                    type:'POST',
+                    data:{
+                        'callcourseregistration':lecture_id,
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success:function(data){
+                        $("#courseregistration_list_table").html($("#courseregistration_list_table",data));
+
+                    },
+                    error:function(){
+
+                        console.log('error');
+                    }
+                    });
+            }
+        </script>
+        <!-- apexcharts -->
+        <script src="{% static 'libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+        <!-- file-manager js -->
+        <script src="{% static 'js/pages/file-manager.init.js' %}"></script>
+
+{% endblock %}

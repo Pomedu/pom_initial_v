@@ -1,0 +1,116 @@
+{% load static %} {% block sidebar %}
+    <!-- ========== Left Sidebar Start ========== -->
+    <div class="vertical-menu">
+      <div data-simplebar class="h-100">
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+          <!-- Left Menu Start -->
+          <ul class="metismenu list-unstyled" id="side-menu">
+
+            {% if user.role == "S" or user.role == "T" %}
+            <li>
+              <a href="javascript: void(0);" class="waves-effect">
+                  <i class="bx bx-smile"></i>
+                  <span key="t-my">My</span>
+              </a>
+
+              <ul class="sub-menu" aria-expanded="false">
+                  <li><a href="{% url 'lectureapp:lecture_grid' %}" key="t-lecture_list">나의 강의실</a></li>
+                  <li><a href="{% url 'lectureapp:timetable_ongoingpyt' %}" key="t-timetable">나의 시간표</a></li>
+                  <li><a href="#" key="t-attendace">나의 출석부</a></li>
+                  <li><a href="#" key="t-test">시험 보관함</a></li>
+
+              </ul>
+            </li>
+            {% endif %}
+
+            <li class="menu-title" key="t-apps">학원</li>
+
+            <li>
+              <a href="javascript: void(0);" class="waves-effect">
+                  <i class="bx bx-box"></i>
+                  <span key="t-lectures">강의</span>
+              </a>
+              <ul class="sub-menu" aria-expanded="false">
+                  <li><a href="{% url 'lectureapp:lecture_grid' %}" key="t-lecture_grid">강의 목록</a></li>
+                  <li><a href="{% url 'lectureapp:timetable' %}" key="t-lecture_timetable">강의별 시간표</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="javascript: void(0);" class="waves-effect">
+                  <i class="bx bx-user-circle"></i>
+                  <span key="t-teachers">강사</span>
+              </a>
+              <ul class="sub-menu" aria-expanded="false">
+                  <li><a href="#" key="t-teacher_list">강사 목록</a></li>
+                  <li><a href="#" key="t-teacher_timetable">강사별 시간표</a></li>
+              </ul>
+            </li>
+
+
+
+            {% if user.role == "A" or user.role == "T" %}
+
+             <li class="menu-title" key="t-apps">행정 업무</li>
+            <li>
+              <a href="{% url 'lectureapp:lecture_list' %}" class="waves-effect">
+                  <i class="bx bx-box"></i>
+                  <span key="t-lectures_management">강의 관리</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'studentapp:list' %}" class="waves-effect">
+                  <i class="bx bx-group"></i>
+                  <span key="t-students_management">학생 관리</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'lectureapp:courseregistration_list' %}" class="waves-effect">
+                  <i class="bx bx-left-indent"></i>
+                  <span key="t-courseregistrations_management">수강 관리</span>
+              </a>
+            </li>
+              {% if user.role == "A" %}
+            <li>
+              <a href="{% url 'teacherapp:list' %}" class="waves-effect">
+                  <i class="bx bx-user-circle"></i>
+                  <span key="t-teachers_management">강사 관리</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url 'consultingapp:consulting_list' %}" class="waves-effect">
+                  <i class="bx bx-clipboard"></i>
+                  <span key="t-consulting_management">상담</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="javascript: void(0);" class="waves-effect">
+                  <i class="bx bx-analyse"></i>
+                  <span key="t-presentation_management">설명회</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="javascript: void(0);" class="waves-effect">
+                  <i class="bx bx-money"></i>
+                  <span key="t-payment_management">수납</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="javascript: void(0);" class="waves-effect">
+                  <i class="bx bx-share-alt"></i>
+                  <span key="t-task_share">업무 공유</span>
+              </a>
+            </li>
+              {% endif %}
+            {% endif %}
+          </ul>
+        </div>
+        <!-- Sidebar -->
+      </div>
+    </div>
+    <!-- Left Sidebar End -->
+{% endblock %}

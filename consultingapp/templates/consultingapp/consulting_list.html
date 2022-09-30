@@ -1,0 +1,187 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block contents %}
+                        <a href="{% url 'consultingapp:consulting_create' %} "class="btn btn-primary waves-effect waves-light mb-3">신규 상담 등록</a>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                        <h4 class="card-title">상담 대기 목록</h4>
+                                        <p class="card-title-desc">상담이 필요한 신규 상담 신청 및 재상담 필요 목록입니다.
+                                        </p>
+
+                                        <table id="consulting_pending_table" class="table responsive table-bordered dt-responsive table-hover nowrap w-100">
+                                            <thead>
+                                            <tr>
+                                                <th>학생명</th>
+                                                <th>번호</th>
+                                                <th>학교</th>
+                                                <th>상담신청일자</th>
+                                                <th>최종상담일자</th>
+                                                <th>담당직원</th>
+                                                <th>담당강사</th>
+                                                <th>상태</th>
+                                                <th>동작</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+                                            {% if pending_list %}
+                                            {% for pending in pending_list %}
+                                            <a href="#">
+                                            <tr>
+                                                <td>{{ pending.client_name }}</td>
+                                                <td>{{ pending.client_phone_number }}</td>
+                                                <td>{{ pending.client_school }}</td>
+                                                <td>{{ pending.created_at }}</td>
+                                                <td>{{ pending.updated_at }}</td>
+                                                <td>{{ pending.in_charge_A }}</td>
+                                                <td>{{ pending.in_charge_T }}</td>
+                                                <td>
+                                                    <div class="text-center">
+                                                        <span class="badge rounded-pill badge-soft-warning font-size-11">{{ pending.get_status_display }}</span>
+                                                    </div>
+                                                </td>
+                                                 <td>
+                                                    <a href="{% url 'consultingapp:consulting_update' pk=pending.id %}" class="badge badge-soft-success font-size-11" >
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                    <a class="badge badge-soft-danger font-size-11 delete_consulting" data-bs-toggle="modal" data-bs-target="#delete_consulting" data-id="{{ pending.id }}">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            </a>
+                                            {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                            {% csrf_token %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                        <h4 class="card-title">상담 완료 목록</h4>
+                                        <p class="card-title-desc">상담이 완료된 목록입니다.
+                                        </p>
+                                        <table id="consulting_completed_table" class="table table-bordered dt-responsive table-hover nowrap w-100">
+                                            <thead>
+                                                <tr>
+                                                    <th>학생명</th>
+                                                    <th>번호</th>
+                                                    <th>학교</th>
+                                                    <th>상담신청일자</th>
+                                                    <th>최종상담일자</th>
+                                                    <th>담당직원</th>
+                                                    <th>담당강사</th>
+                                                    <th>상태</th>
+                                                    <th>동작</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                            {% if completed_list %}
+                                            {% for completed in completed_list %}
+                                                <tr>
+                                                    <td>{{ completed.client_name }}</td>
+                                                    <td>{{ completed.client_phone_number }}</td>
+                                                    <td>{{ completed.client_school }}</td>
+                                                    <td>{{ completed.created_at }}</td>
+                                                    <td>{{ completed.updated_at }}</td>
+                                                    <td>{{ completed.in_charge_A }}</td>
+                                                    <td>{{ completed.in_charge_T }}</td>
+                                                    <td>
+                                                        <div class="text-center">
+                                                            <span class="badge rounded-pill badge-soft-success font-size-11">{{ completed.get_status_display }}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{% url 'consultingapp:consulting_update' pk=completed.id %}" class="badge badge-soft-success font-size-11" >
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                        </a>
+                                                        <a class="badge badge-soft-danger font-size-11 delete_consulting" data-bs-toggle="modal" data-bs-target="#delete_consulting" data-id="{{ completed.id }}">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                            {% csrf_token %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                    {% include 'snippets/consulting_delete_modal.html' with consulting=consulting %}
+{% endblock %}
+
+
+{% block extra_javascript %}
+      <!-- Required datatable js -->
+        <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+        <!-- Buttons examples -->
+        <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+        <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+        <!-- Responsive examples -->
+        <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{% static 'js/pages/datatables.init.js' %}"></script>
+        <script>
+            $("#consulting_pending_table").DataTable({
+                order: [[4, 'asc']],
+            });
+
+            $("#consulting_completed_table").DataTable({
+                order: [[4, 'asc']],
+            });
+
+            $(document).on('click','.delete_consulting',function(){
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url:'',
+                    type:'POST',
+                    data:{
+                        'id':id,
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success:function(data){
+                        $('#delete_consulting .modal-dialog').html($('#delete_consulting .modal-dialog',data));
+                        $('#delete_consulting').modal('show');
+                    },
+                    error:function(){
+                        console.log('error')
+                    },
+                });
+            });
+        </script>
+
+{% endblock %}

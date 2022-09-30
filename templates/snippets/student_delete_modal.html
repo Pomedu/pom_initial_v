@@ -1,0 +1,43 @@
+<div id="delete_student" class="modal fade" tabindex="-1" aria-labelledby="DeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ApplyLabel">학생 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if student %}
+            <form action="{% url 'studentapp:list' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+                <h5>'{{ student.name }}' 학생을 삭제 하시겠습니까?</h5>
+                <ul>
+                    <li>
+                        <h5>전화 번호</h5>
+                        <p>{{ student.phone_number }}</p>
+                    </li>
+                    <li>
+                        <h5>학교</h5>
+                        <p>{{ student.school }}</p>
+                    </li>
+                    <li>
+                        <h5>수강 중인 수업</h5>
+                        {% if student.lectures.all %}
+                        {% for lecture in student.lectures.all %}
+                        <p>{{ lecture.name }}</p>
+                        {% endfor %}
+                        {% else %}
+                        <p>없음</p>
+                        {% endif %}
+                    </li>
+                <input type="hidden" name="student_delete" value="{{ student.pk }}">
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-danger waves-effect waves-light">학생 삭제</button>
+            </div>
+            </form>
+            {% endif %}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

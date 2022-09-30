@@ -1,0 +1,134 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block extra_css %}
+    <link href="{% static 'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+
+{% endblock %}
+{% block contents %}
+<!-- filemanager-leftsidebar -->
+
+<div class="w-100">
+    <div class="card">
+        <div class="card-body">
+            <div>
+                <div class="row mb-3">
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="mt-2">
+                            <h5>강의 선택</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="row">
+                    {% for teacher in teacher_list %}
+                    <div class="col-xl-2 col-sm-6 ">
+                        <a role="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="card shadow-none border dropdown">
+                            <div class="card-body p-3">
+                                <div class="">
+                                    <div class="avatar-xs me-3 mb-3">
+                                        <div class="avatar-title bg-transparent rounded">
+                                            <i class="bx bxs-folder font-size-24 text-warning"></i>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <div class="overflow-hidden me-auto">
+                                            <h5 class="font-size-14 text-truncate mb-1">{{ teacher.name }}</h5>
+                                            <p class="text-muted text-truncate mb-0">진행 중인 수업 수: {{ teacher.lectures.all|length}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        {% for lecture in teacher.lectures.all %}
+                                        <a class="dropdown-item select_lecture" href="#" data-id="{{ lecture.id }}" >{{ lecture.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                    {% csrf_token %}
+                                </div>
+                            </div>
+
+                        </div>
+                        </a>
+                    </div>
+                    <!-- end col -->
+                    {% endfor %}
+                </div>
+                <!-- end row -->
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="selected_lecture_card">
+        <div class="card-body">
+            <div>
+                <div class="row mb-3">
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="mt-2">
+                            <h5>선택된 강의</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                {% if lecture %}
+                    <h5 class="my-0 text-success"><i class="mdi mdi-check-all me-3"></i>강의가 선택되었습니다</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ lecture.name }}</h5>
+                        <p class="card-text">{{ lecture.teacher }} 강사</p>
+                    </div>
+                {% else %}
+                    <h5 class="my-0 text-danger"><i class="mdi mdi-block-helper me-3"></i>선택된 강의가 없습니다</h5>
+                {% endif %}
+            </div>
+            <div>
+                <div class="row mt-3" style="text-align:right;">
+                    <form action="{% url 'lectureapp:courseregistration_create' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="selected_lecture" value="{{ lecture.id }}">
+                        <div class="mt-2">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mb-3">다음</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+        <!-- end card -->
+
+
+{% endblock %}
+
+{% block extra_javascript %}
+
+        <!-- bootstrap datepicker -->
+        <script src="{% static 'libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+        <!-- form repeater js -->
+        <script src="{% static 'libs/jquery.repeater/jquery.repeater.min.js' %}"></script>
+        <script src="{% static 'js/pages/form-repeater.int.js' %}"></script>
+
+        <script>
+
+            $(document).on('click','.select_lecture',function(){
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url:'',
+                    type:'POST',
+                    data:{
+                        'id':id,
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success:function(data){
+                        $('#selected_lecture_card').html($('#selected_lecture_card',data));
+                    },
+                    error:function(){
+                        console.log('error')
+                    },
+                });
+            });
+        </script>
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends 'partials/base_wo_alert.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'libs/@fullcalendar/core/main.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/@fullcalendar/daygrid/main.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/@fullcalendar/bootstrap/main.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/@fullcalendar/timegrid/main.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block contents %}
+                        <div class="row">
+                            <div class="col-12">
+                               
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="card">
+                                            <div class="card-body">
+
+                                                <div id="external-events" class="mt-2">
+                                                    <br>
+                                                    <p class="text-muted">
+                                                      <strong>표시할 강의를 체크하세요</strong>
+                                                    </p>
+                                                {% for lecture in lecture_list %}
+                                                    <div class="form-check form-check-success mt-2">
+                                                        <input class="form-check-input filter" type="checkbox" value="{{ lecture.pk }}" id="lecture_selector"checked>
+                                                        <label class="form-check-label">
+                                                            {{ lecture.name }} |  {{ lecture.teacher }} 강사
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+
+                                    <div class="col-lg-9">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div id="calendar"></div>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col -->
+
+                                </div> 
+
+                                <div style='clear:both'></div>
+
+
+                                <!-- Add New Event MODAL -->
+                                <div class="modal fade" id="event-modal" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header py-3 px-4 border-bottom-0">
+                                                <h5 class="modal-title" id="modal-title">Event</h5>
+
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <form class="needs-validation" name="event-form" id="form-event" novalidate>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Event Name</label>
+                                                                <input class="form-control" placeholder="Insert Event Name"
+                                                                    type="text" name="title" id="event-title" required value="" />
+                                                                <div class="invalid-feedback">Please provide a valid event name</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Category</label>
+                                                                <select class="form-control form-select" name="category" id="event-category">
+                                                                    <option  selected> --Select-- </option>
+                                                                    <option value="bg-danger">Danger</option>
+                                                                    <option value="bg-success">Success</option>
+                                                                    <option value="bg-primary">Primary</option>
+                                                                    <option value="bg-info">Info</option>
+                                                                    <option value="bg-dark">Dark</option>
+                                                                    <option value="bg-warning">Warning</option>
+                                                                </select>
+                                                                <div class="invalid-feedback">Please select a valid event category</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                            <button type="button" class="btn btn-light me-1" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div> <!-- end modal-content-->
+                                    </div> <!-- end modal dialog-->
+                                </div>
+                                <!-- end modal-->
+
+                            </div>
+                        </div>
+{% endblock %}
+{% block extra_javascript %}
+    <!-- plugin js -->
+    <script src="{% static 'libs/moment/min/moment.min.js' %}"></script>
+    <script src="{% static 'libs/jquery-ui-dist/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'libs/@fullcalendar/core/main.min.js' %}"></script>
+    <script src="{% static 'libs/@fullcalendar/bootstrap/main.min.js' %}"></script>
+    <script src="{% static 'libs/@fullcalendar/daygrid/main.min.js' %}"></script>
+    <script src="{% static 'libs/@fullcalendar/timegrid/main.min.js' %}"></script>
+    <script src="{% static 'libs/@fullcalendar/interaction/main.min.js' %}"></script>
+    
+    <!-- Calendar init -->
+    <script>
+
+    !(function (v) {
+    "use strict";
+    function e() {}
+    (e.prototype.init = function () {
+        var a = v("#event-modal"),
+            t = v("#modal-title"),
+            n = v("#form-event"),
+            l = null,
+            i = null,
+            r = document.getElementsByClassName("needs-validation"),
+            l = null,
+            i = null,
+            e = new Date(),
+            s = e.getDate(),
+            d = e.getMonth(),
+            e = e.getFullYear();
+        new FullCalendarInteraction.Draggable(document.getElementById("external-events"), {
+            itemSelector: ".external-event",
+            eventData: function (e) {
+                return { title: e.innerText, className: v(e).data("class") };
+            },
+        });
+        (e = [
+            {% for coursetime in coursetime_list %}
+            { groupId: '{{ coursetime.lecture.pk }}',
+              title: '{{ coursetime.lecture.name }}',
+              startTime: '{{ coursetime.start_time|time:"H:i" }}',
+              endTime: '{{ coursetime.end_time|time:"H:i" }}',
+              daysOfWeek:['{{ coursetime.day }}'],
+              startRecur: '{{ coursetime.lecture.start_date|date:"Y-m-d" }}',
+              endRecur: '{{ coursetime.lecture.end_date|date:"Y-m-d" }}',
+              description: '{{ coursetime.lecture.description }}',
+            },
+            {% endfor %}
+        ]),
+            document.getElementById("external-events"),
+            (d = document.getElementById("calendar"));
+        function o(e) {
+            a.modal("show"), n.removeClass("was-validated"), n[0].reset(), v("#event-title").val(), v("#event-category").val(), t.text("Add Event"), (i = e);
+        }
+        var c = new FullCalendar.Calendar(d, {
+            plugins: ["bootstrap", "interaction", "weekGrid", "timeGrid"],
+            locale: 'ko',
+            firstDay: 1,
+            editable: !0,
+            droppable: !0,
+            selectable: !0,
+            eventOverlap: !0,
+            themeSystem: "bootstrap",
+            allDaySlot : false,
+            minTime: '10:00:00',
+            header: { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth" },
+            eventClick: function (e) {
+                a.modal("show"), n[0].reset(), (l = e.event), v("#event-title").val(l.title), v("#event-category").val(l.classNames[0]), (i = null), t.text("Edit Event"), (i = null);
+            },
+            dateClick: function (e) {
+                o(e);
+            },
+            events: e,
+            eventRender: function eventRender(event, view) {
+                return filtering(event);
+            },
+
+        });
+        c.render(),
+            v(n).on("submit", function (e) {
+                e.preventDefault();
+                v("#form-event :input");
+                var t = v("#event-title").val(),
+                    e = v("#event-category").val();
+                !1 === r[0].checkValidity()
+                    ? (event.preventDefault(), event.stopPropagation(), r[0].classList.add("was-validated"))
+                    : (l ? (l.setProp("title", t), l.setProp("classNames", [e])) : ((e = { title: t, start: i.date, allDay: i.allDay, className: e }), c.addEvent(e)), a.modal("hide"));
+            }),
+            v("#btn-delete-event").on("click", function (e) {
+                l && (l.remove(), (l = null), a.modal("hide"));
+            }),
+            v("#btn-new-event").on("click", function (e) {
+                o({ date: new Date(), allDay: !0 });
+            });
+            v(".filter").on("change", function () {
+                c.rerenderEvents();
+            });
+
+    }),
+        (v.CalendarPage = new e()),
+        (v.CalendarPage.Constructor = e);
+    })(window.jQuery),
+        (function () {
+            "use strict";
+            window.jQuery.CalendarPage.init();
+        })();
+
+    function filtering(event) {
+      var show_lecture = true;
+      var lecture = $('input:checkbox.filter:checked').map(function () {
+        return $(this).val();
+      }).get();
+
+      show_lecture = lecture.indexOf(event.event.groupId) >= 0;
+      console.log(show_lecture);
+      return show_lecture;
+    }
+
+
+
+    </script>
+{% endblock %}

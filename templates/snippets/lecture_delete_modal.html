@@ -1,0 +1,43 @@
+<div id="delete_lecture" class="modal fade" tabindex="-1" aria-labelledby="DeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ApplyLabel">강의 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if lecture %}
+            <form action="{% url 'lectureapp:lecture_list' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+                <h5>'{{ lecture.name }}' 강의를 삭제 하시겠습니까?</h5>
+                <ul>
+                    <li>
+                        <h5>강사</h5>
+                        <p>{{ lecture.teacher }}</p>
+                    </li>
+                    <li>
+                        <h5>수강생</h5>
+                        <p>{{ lecture.students.all|length }}명</p>
+                    </li>
+                    <li>
+                        <h5>개강일/종강일</h5>
+                        <p>{{ lecture.start_date }}/{{ lecture.end_date }}</p>
+                    </li>
+                    <li>
+                        <h5>강의시간</h5>
+                        {% for time in lecture.time.all %}
+                        <p>{{ time.get_day_display }}({{ time.start_time }})</p>
+                        {% endfor %}
+                    </li>
+                <input type="hidden" name="lecture_delete" value="{{ lecture.pk }}">
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-danger waves-effect waves-light">강의 삭제</button>
+            </div>
+            </form>
+            {% endif %}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

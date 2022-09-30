@@ -1,0 +1,110 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block contents %}
+                        <a href="{% url 'studentapp:create' %} " class="btn btn-primary waves-effect waves-light mb-3">신규 학생 등록</a>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">학생 목록</h4>
+                                        <p class="card-title-desc">포엠학원에 등록된 학생 목록입니다</p>
+                                        <table id="student_list_table" class="table responsive table-bordered dt-responsive table-hover nowrap w-100">
+                                            <thead>
+                                            <tr>
+                                                <th>이름</th>
+                                                <th>번호</th>
+                                                <th>학교</th>
+                                                <th>등록일</th>
+                                                <th>수강 강의 개수</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+                                            {% if student_list %}
+                                            {% for student in student_list %}
+
+                                            <tr>
+                                                <td>{{ student.name }}</td>
+                                                <td>{{ student.phone_number }}</td>
+                                                <td>{{ student.school }}</td>
+                                                <td>{{ student.created_at }}</td>
+                                                <td>{{ student.lectures.all|length }}</td>
+                                                <td>
+                                                    <a href="{% url 'studentapp:update' pk=student.id %}" class="badge badge-soft-success font-size-11" >
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                    <a class="badge badge-soft-danger font-size-11 delete_student" data-bs-toggle="modal" data-bs-target="#delete_student" data-id="{{ student.id }}">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                            {% csrf_token %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                    {% include 'snippets/student_delete_modal.html' with student=student %}
+{% endblock %}
+
+
+{% block extra_javascript %}
+      <!-- Required datatable js -->
+        <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+        <!-- Buttons examples -->
+        <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+        <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+        <!-- Responsive examples -->
+        <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{% static 'js/pages/datatables.init.js' %}"></script>
+        <script>
+            $("#student_list_table").DataTable({
+                order: [[0, 'asc']],
+            });
+
+            $(document).on('click','.delete_student',function(){
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url:'',
+                    type:'POST',
+                    data:{
+                        'id':id,
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success:function(data){
+                        $('#delete_student .modal-dialog').html($('#delete_student .modal-dialog',data));
+                        $('#delete_student').modal('show');
+                    },
+                    error:function(){
+                        console.log('error')
+                    },
+                });
+            });
+        </script>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+<div id="delete_consulting" class="modal fade" tabindex="-1" aria-labelledby="DeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ApplyLabel">상담 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if consulting %}
+            <form action="{% url 'consultingapp:consulting_list' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+                <h5>'{{ consulting.client_name }}' 의 상담을 삭제 하시겠습니까?</h5>
+                <p>고객 번호: {{ consulting.client_phone_number }}</p>
+                <p>상담 신청일: {{ consulting.created_at }}</p>
+                <p>최근 상담일: {{ consulting.updated_at }}</p>
+                <input type="hidden" name="consulting_delete" value="{{ consulting.pk }}">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-danger waves-effect waves-light">상담 삭제</button>
+            </div>
+            </form>
+            {% endif %}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
